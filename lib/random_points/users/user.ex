@@ -5,7 +5,7 @@ defmodule RandomPoints.Users.User do
   schema "users" do
     field :points, :integer
 
-    timestamps()
+    timestamps([type: :utc_datetime_usec])
   end
 
   def changeset(user, attrs) do

@@ -1,11 +1,11 @@
-# Script for populating the database. You can run it as:
-#
-#     mix run priv/repo/seeds.exs
-#
-# Inside the script, you can read and write to any of your
-# repositories directly:
-#
-#     RandomPoints.Repo.insert!(%RandomPoints.SomeSchema{})
-#
-# We recommend using the bang functions (`insert!`, `update!`
-# and so on) as they will fail if something goes wrong.
+alias RandomPoints.Repo
+alias RandomPoints.Users.User
+
+timestamp = DateTime.utc_now()
+
+1..1_000_000
+|> Enum.map(fn _x -> %{points: 0, inserted_at: timestamp, updated_at: timestamp} end)
+|> Enum.chunk_every(10_000)
+|> Enum.each(fn entries ->
+  Repo.insert_all(User, entries)
+end)
