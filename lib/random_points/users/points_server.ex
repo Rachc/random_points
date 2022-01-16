@@ -43,6 +43,8 @@ defmodule RandomPoints.Users.PointsServer do
 
   def get_state(pid), do: GenServer.call(pid, :get_state)
 
+  def get_users(pid), do: GenServer.call(pid, :get_users)
+
   ##### Server
 
   def handle_info({:refresh, interval}, state) do
@@ -60,4 +62,22 @@ defmodule RandomPoints.Users.PointsServer do
   end
 
   def handle_call(:get_state, _from, state), do: {:reply, state, state}
+
+  def handle_call(:get_users, _from, state) do
+    %{timestamp: timestamp, max_number: max_number} = state
+
+    users =
+      User
+      |> where([user], user.points > ^max_number)
+      |> limit(2)
+      |> Repo.all()
+
+    filtered_users = %{users: users, timestamp: timestamp}
+
+    now = DateTime.utc_now()
+
+    new_state = %{max_number: max_number, timestamp: now}
+
+    {:reply, filtered_users, new_state}
+  end
 end

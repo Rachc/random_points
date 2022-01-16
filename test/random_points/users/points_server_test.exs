@@ -47,4 +47,34 @@ defmodule PointsServerTest do
       refute first_user_points == second_user_points
     end
   end
+
+  describe "get_users/1" do
+    # As the test above, this test is fragile because depends of the
+    # result of a random function. One way to fix this is creating a
+    # module responsible for the random function, and passing it when we
+    # are starting the server. That way, we can replace for a function
+    # that returns a fixed umber when we are testing.
+    test "Returns 2 user with points higher than max_number and update timestamp" do
+      {:ok, user1} = Repo.insert(%User{points: 0})
+      {:ok, user2} = Repo.insert(%User{points: 100})
+      {:ok, user3} = Repo.insert(%User{points: 100})
+      {:ok, _user4} = Repo.insert(%User{points: 100})
+
+      interval_in_ms = 1000 * 60
+
+      pid = start_supervised!({PointsServer, interval: interval_in_ms})
+
+      %{users: users, timestamp: requested_timestamp} = PointsServer.get_users(pid)
+
+      %{timestamp: new_timestamp} = PointsServer.get_state(pid)
+
+      refute Enum.any?(users, fn user -> user.id == user1.id end)
+      assert Enum.any?(users, fn user -> user.id == user2.id end)
+      assert Enum.any?(users, fn user -> user.id == user3.id end)
+
+      assert Enum.count(users) == 2
+
+      refute requested_timestamp == new_timestamp
+    end
+  end
 end
