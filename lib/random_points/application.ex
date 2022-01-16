@@ -15,9 +15,10 @@ defmodule RandomPoints.Application do
       # Start the PubSub system
       {Phoenix.PubSub, name: RandomPoints.PubSub},
       # Start the Endpoint (http/https)
-      RandomPointsWeb.Endpoint
+      RandomPointsWeb.Endpoint,
       # Start a worker by calling: RandomPoints.Worker.start_link(arg)
       # {RandomPoints.Worker, arg}
+      {RandomPoints.Users.PointsServer, interval: 1000 * 60 * 1}
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
