@@ -7,5 +7,9 @@ defmodule RandomPoints.Repo.Migrations.CreateUsers do
 
       timestamps()
     end
+
+    create constraint("users", :points_must_be_between_0_and_100,
+             check: "points >= 0 and points <= 100"
+           )
   end
 end
