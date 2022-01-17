@@ -11,7 +11,12 @@ defmodule RandomPoints.Users.PointsServer do
   ##### Client
 
   def start_link(opts) do
-    GenServer.start_link(__MODULE__, opts)
+    star_opts = if opts[:name] do
+      [name: opts[:name]]
+    else
+      []
+    end
+    GenServer.start_link(__MODULE__, opts, star_opts)
   end
 
   def init(opts) do
@@ -43,7 +48,7 @@ defmodule RandomPoints.Users.PointsServer do
 
   def get_state(pid), do: GenServer.call(pid, :get_state)
 
-  def get_users(pid), do: GenServer.call(pid, :get_users)
+  def get_users(pid \\ __MODULE__), do: GenServer.call(pid, :get_users)
 
   ##### Server
 
@@ -63,11 +68,10 @@ defmodule RandomPoints.Users.PointsServer do
 
   def handle_call(:get_state, _from, state), do: {:reply, state, state}
 
-  def handle_call(:get_users, _from, state) do
+  def handle_call(:get_users, _from , state) do
     %{timestamp: timestamp, max_number: max_number} = state
 
-    users =
-      User
+    users = User
       |> where([user], user.points > ^max_number)
       |> limit(2)
       |> Repo.all()

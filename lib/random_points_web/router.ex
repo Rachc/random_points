@@ -21,6 +21,7 @@ defmodule RandomPointsWeb.Router do
 
     scope "/" do
       pipe_through [:fetch_session, :protect_from_forgery]
+      get "/", RandomPointsWeb.PointController, :index
 
       live_dashboard "/dashboard", metrics: RandomPointsWeb.Telemetry
     end

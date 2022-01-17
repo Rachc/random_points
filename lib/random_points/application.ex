@@ -5,6 +5,8 @@ defmodule RandomPoints.Application do
 
   use Application
 
+  alias RandomPoints.Users.PointsServer
+
   @impl true
   def start(_type, _args) do
     children = [
@@ -18,7 +20,7 @@ defmodule RandomPoints.Application do
       RandomPointsWeb.Endpoint,
       # Start a worker by calling: RandomPoints.Worker.start_link(arg)
       # {RandomPoints.Worker, arg}
-      {RandomPoints.Users.PointsServer, interval: 1000 * 60 * 1}
+      {PointsServer, interval: 1000 * 60 * 1, name: PointsServer}
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
